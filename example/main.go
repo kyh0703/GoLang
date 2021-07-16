@@ -1,12 +1,13 @@
 package main
 
 import (
-	"github/golang/grpc/example/banking"
+	"fmt"
 
-	"github.com/kyh0703/golang/example/banking"
+	"github.com/kyh0703/golang/example/accounts"
 )
 
 func main() {
-	account := banking.Account{Owner: "kim", Balancer: 1000}
-	fmt.println(account)
+	account := accounts.NewAccount("nico")
+	accounts.Deposit(10)
+	fmt.Println(accounts.Balance())
 }
