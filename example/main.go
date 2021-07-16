@@ -3,7 +3,7 @@ package main
 import (
 	"github/golang/grpc/example/banking"
 
-	"github.com/kyh0703/golang/grpc/example/banking"
+	"github.com/kyh0703/golang/example/banking"
 )
 
 func main() {
