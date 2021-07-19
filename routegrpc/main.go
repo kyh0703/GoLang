@@ -2,14 +2,15 @@ package main
 
 import (
 	"log"
+	"net"
 
 	"github.com/caarlos0/env"
 
-	"github.com/golang/protobuf/protoc-gen-go/grpc"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	"github.com/kyh0703/golang/routegrpc/service"
 	routepb "github.com/kyh0703/grpc/gen/route"
-	"github.com/kyh0703/routegrpc/service"
+	"google.golang.org/grpc"
 )
 
 type Config struct {
@@ -18,24 +19,9 @@ type Config struct {
 	// SecertKey    string `env:"SECRET_KEY, required"`
 }
 
-// func NewServer(cfg Config) error {
-// 	lis, err := net.Listen("tcp", ":"+cfg.Port)
-// 	if err != nil {
-// 		log.Fatalf("failed to listen: %v", err)
-// 		return err
-// 	}
-
-// 	log.Printf("start gRPC server on %s port", cfg.Port)
-// 	return serve.Serve(lis)
-// }
-
 func main() {
 	cfg := Config{}
 	env.Parse(&cfg)
-
-	if err := NewServer(cfg); err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
 
 	svc := service.NewRouteService()
 
@@ -46,4 +32,13 @@ func main() {
 	)
 
 	routepb.RegisterRouteServer(svr, svc)
+
+	lis, err := net.Listen("tcp", cfg.Port)
+	if err != nil {
+		log.Fatal("failed listening: %s", err)
+	}
+
+	if err := svr.Serve(lis); err != nil {
+		log.Fatal("server ended: %s", err)
+	}
 }
