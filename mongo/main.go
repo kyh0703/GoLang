@@ -5,39 +5,70 @@ import (
 	"fmt"
 	"log"
 
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"github.com/kyh0703/golang/mongo/mongo"
+	"go.mongodb.org/mongo-driver/mongo/bson"
 )
 
-type logEntity struct {
-	logType  string `bson:"logType"`
-	logValue string `bson:"logValue"`
-	dbPrefix string `bson:"dbPrefix"`
-	time     string `bson:"time"`
-}
+func create() {
+	conn := mongo.GetClient()
+	database := conn.Database("testkyh")
+	collection := database.Collection("podcats")
 
-func mongoConn() (client *mongo.Client) {
-	// credential := options.Credential{
-	// 	Username: "<USER_NAME>",
-	// 	Password: "<PASSWORD>",
-	// }
+	res, err := collection.InsertOne(context.TODO(), bson.D{
+		{Key: "test", Value: "1"},
+		{Key: "test1", Value: "2"},
+		{Key: "test2", Value: "3"},
+		{Key: "test3", Value: "4"},
+	})
 
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
-	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = client.Ping(context.TODO(), nil)
+	fmt.Println("INSERT RESULT", res)
+}
+
+func remove() {
+	conn := mongo.GetClient()
+	database := conn.Database("testkyh")
+	collection := database.Collection("podcats")
+
+	insertResult, err := writeDB.InsertOne(context.TODO(), bson.D{
+		{Key: "logType", Value: "hihihi"},
+		{Key: "logValue", Value: "hoihi"},
+		{Key: "dbPrefix", Value: "hhihihi"},
+		{Key: "time", Value: "dada"},
+	})
+
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("MongoDB Connection Made")
-	return client
+	fmt.Println("INSERT RESULT", insertResult)
 }
 
-func logWrite(writeDB *mongo.Collection) {
+func update() {
+	conn := mongo.GetClient()
+	database := conn.Database("testkyh")
+	collection := database.Collection("podcats")
+
+	res, err := writeDB.InsertOne(context.TODO(), bson.D{
+		{Key: "test", Value: "1"},
+		{Key: "test1", Value: "2"},
+		{Key: "test2", Value: "3"},
+		{Key: "test3", Value: "4"},
+	})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("INSERT RESULT", res)
+}
+
+func delete() {
+	conn := mongo.GetClient()
+	database := conn.Database("testkyh")
+	collection := database.Collection("podcats")
+
 	insertResult, err := writeDB.InsertOne(context.TODO(), bson.D{
 		{Key: "logType", Value: "hihihi"},
 		{Key: "logValue", Value: "hoihi"},
@@ -52,8 +83,9 @@ func logWrite(writeDB *mongo.Collection) {
 }
 
 func main() {
-	conn := mongoConn()
-	mongo := conn.Database("log_data").Collection("logs")
+	conn := mymongo.Connect("localhost", "27017")
 
-	fmt.Println(conn, mongo)
+	database := conn.Database("testkyh")
+	collection := database.Collection("podcats")
+	insert(collection)
 }
