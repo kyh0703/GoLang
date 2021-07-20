@@ -2,7 +2,6 @@ package mongo
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -18,12 +17,20 @@ func GetClient() *mongo.Client {
 
 // Connect MongoDB
 func Connect(host, port string) error {
-	fmt.Println("hihihihi")
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 	uri := "mongodb://" + host + ":" + port
 	clientOpts := options.Client().ApplyURI(uri)
+	clientOpts.SetMaxPoolSize(100)
+	clientOpts.SetMinPoolSize(10)
+	clientOpts.SetMaxConnIdleTime(10 * time.Second)
 
-	if err := connect(ctx, clientOpts); err != nil {
+	conn, err := mongo.Connect(ctx, clientOpts)
+	if err != nil {
+		return err
+	}
+
+	err = conn.Ping(ctx, nil)
+	if err != nil {
 		return err
 	}
 
@@ -49,19 +56,5 @@ func ConnectAuth(host, port, id, pwd string) error {
 
 // connect mongoDB
 func connect(ctx context.Context, opts *options.ClientOptions) error {
-	opts.SetMaxPoolSize(100)
-	opts.SetMinPoolSize(10)
-	opts.SetMaxConnIdleTime(10 * time.Second)
 
-	conn, err := mongo.Connect(ctx, opts)
-	if err != nil {
-		return err
-	}
-
-	err = conn.Ping(ctx, nil)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
