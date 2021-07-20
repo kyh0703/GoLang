@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -15,38 +16,44 @@ func GetClient() *mongo.Client {
 	return client
 }
 
-// Connect is mongoDB
+// Connect MongoDB
 func Connect(host, port string) error {
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	fmt.Println("hihihihi")
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 	uri := "mongodb://" + host + ":" + port
 	clientOpts := options.Client().ApplyURI(uri)
-	clientOpts.SetMaxPoolSize(100)
-	clientOpts.SetMinPoolSize(10)
-	clientOpts.SetMaxConnIdleTime(10 * time.Second)
 
-	conn, err := mongo.Connect(ctx, clientOpts)
-	if err != nil {
-		return err
-	}
-
-	err = conn.Ping(ctx, nil)
-	if err != nil {
+	if err := connect(ctx, clientOpts); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-// Connect is mongoDB with authentication
+// Connect mongoDB with authentication
 func ConnectAuth(host, port, id, pwd string) error {
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 	uri := "mongodb://" + host + ":" + port
 	clientOpts := options.Client().ApplyURI(uri)
-	clientOpts.SetMaxPoolSize(100)
-	clientOpts.SetMinPoolSize(10)
-	clientOpts.SetMaxConnIdleTime(10 * time.Second)
+	clientOpts.SetAuth(options.Credential{
+		Username: id,
+		Password: pwd,
+	})
 
-	conn, err := mongo.Connect(ctx, clientOpts)
+	if err := connect(ctx, clientOpts); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// connect mongoDB
+func connect(ctx context.Context, opts *options.ClientOptions) error {
+	opts.SetMaxPoolSize(100)
+	opts.SetMinPoolSize(10)
+	opts.SetMaxConnIdleTime(10 * time.Second)
+
+	conn, err := mongo.Connect(ctx, opts)
 	if err != nil {
 		return err
 	}

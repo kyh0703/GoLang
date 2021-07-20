@@ -5,9 +5,17 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/caarlos0/env"
 	"github.com/kyh0703/golang/mongo/mongo"
-	"go.mongodb.org/mongo-driver/mongo/bson"
+	"go.mongodb.org/mongo-driver/bson"
 )
+
+type Config struct {
+	MongoHost string `env:"MONGO_INIT_SERVER" envDefault: "127.0.0.1"`
+	MongoPort string `env:"MONGO_INIT_PORT" envDefault: "27017"`
+	MongoId   string `env:"MONGO_INIT_ID" envDefault: "admin"`
+	MongoPwd  string `env:"MONGO_INIT_PWD" envDefault: "dnflth"`
+}
 
 func create() {
 	conn := mongo.GetClient()
@@ -28,64 +36,34 @@ func create() {
 	fmt.Println("INSERT RESULT", res)
 }
 
-func remove() {
-	conn := mongo.GetClient()
-	database := conn.Database("testkyh")
-	collection := database.Collection("podcats")
-
-	insertResult, err := writeDB.InsertOne(context.TODO(), bson.D{
-		{Key: "logType", Value: "hihihi"},
-		{Key: "logValue", Value: "hoihi"},
-		{Key: "dbPrefix", Value: "hhihihi"},
-		{Key: "time", Value: "dada"},
-	})
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("INSERT RESULT", insertResult)
+func read() {
+	// conn := mongo.GetClient()
+	// database := conn.Database("testkyh")
+	// collection := database.Collection("podcats")
 }
 
 func update() {
-	conn := mongo.GetClient()
-	database := conn.Database("testkyh")
-	collection := database.Collection("podcats")
-
-	res, err := writeDB.InsertOne(context.TODO(), bson.D{
-		{Key: "test", Value: "1"},
-		{Key: "test1", Value: "2"},
-		{Key: "test2", Value: "3"},
-		{Key: "test3", Value: "4"},
-	})
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("INSERT RESULT", res)
+	// conn := mongo.GetClient()
+	// database := conn.Database("testkyh")
+	// collection := database.Collection("podcats")
 }
 
 func delete() {
-	conn := mongo.GetClient()
-	database := conn.Database("testkyh")
-	collection := database.Collection("podcats")
-
-	insertResult, err := writeDB.InsertOne(context.TODO(), bson.D{
-		{Key: "logType", Value: "hihihi"},
-		{Key: "logValue", Value: "hoihi"},
-		{Key: "dbPrefix", Value: "hhihihi"},
-		{Key: "time", Value: "dada"},
-	})
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("INSERT RESULT", insertResult)
+	// conn := mongo.GetClient()
+	// database := conn.Database("testkyh")
+	// collection := database.Collection("podcats")
 }
 
 func main() {
-	conn := mymongo.Connect("localhost", "27017")
+	cfg := Config{}
+	if err := env.Parse(&cfg); err != nil {
+		log.Fatalf("%v", err)
+	}
 
-	database := conn.Database("testkyh")
-	collection := database.Collection("podcats")
-	insert(collection)
+	fmt.Println(cfg.MongoHost)
+	if err := mongo.Connect(cfg.MongoHost, cfg.MongoPort); err != nil {
+		log.Fatal("Connect MongoDB Fail")
+	}
+	// time.Sleep(time.Second * 10)
+	create()
 }
