@@ -46,8 +46,17 @@ func ConnectAuth(host, port, id, pwd string) error {
 		Username: id,
 		Password: pwd,
 	})
+	clientOpts.SetMaxPoolSize(100)
+	clientOpts.SetMinPoolSize(10)
+	clientOpts.SetMaxConnIdleTime(10 * time.Second)
 
-	if err := connect(ctx, clientOpts); err != nil {
+	conn, err := mongo.Connect(ctx, clientOpts)
+	if err != nil {
+		return err
+	}
+
+	err = conn.Ping(ctx, nil)
+	if err != nil {
 		return err
 	}
 
