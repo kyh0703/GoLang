@@ -53,8 +53,3 @@ func ConnectAuth(host, port, id, pwd string) error {
 
 	return nil
 }
-
-// connect mongoDB
-func connect(ctx context.Context, opts *options.ClientOptions) error {
-
-}
