@@ -22,32 +22,32 @@ func create() {
 	database := conn.Database("testkyh")
 	collection := database.Collection("podcats")
 
-	filter := bson.M{"test": "1"}
-	num, err := collection.CountDocuments(context.TODO(), filter)
-	if num != 0 {
-		return
-	}
+	// filter := bson.M{"test": "1"}
+	// num, err := collection.CountDocuments(context.TODO(), filter)
+	// if num != 0 {
+	// 	return
+	// }
 
-	type insertData struct {
-		GoogleId string
-		Name     string
-		Email    string
-	}
+	// type insertData struct {
+	// 	GoogleId string
+	// 	Name     string
+	// 	Email    string
+	// }
 
-	newData := insertData{
-		GoogleId: "hi",
-		Name:     "test",
-		Email:    "test2",
-	}
+	// newData := insertData{
+	// 	GoogleId: "hi",
+	// 	Name:     "test",
+	// 	Email:    "test2",
+	// }
 
-	res, err := collection.InsertOne(context.TODO(), newData)
+	// res, err := collection.InsertOne(context.TODO(), newData)
 
-	// res, err := collection.InsertOne(context.TODO(), bson.D{
-	// 	{Key: "test", Value: "1"},
-	// 	{Key: "test1", Value: "2"},
-	// 	{Key: "test2", Value: "3"},
-	// 	{Key: "test3", Value: "4"},
-	// })
+	res, err := collection.InsertOne(context.TODO(), bson.D{
+		{Key: "test", Value: "1"},
+		{Key: "test1", Value: "2"},
+		{Key: "test2", Value: "3"},
+		{Key: "test3", Value: "4"},
+	})
 
 	if err != nil {
 		log.Fatal(err)
@@ -84,6 +84,6 @@ func main() {
 		log.Fatal("Connect MongoDB Fail")
 	}
 
-	log.Default("Connect MongoDB")
+	fmt.Println("connected mongo")
 	create()
 }

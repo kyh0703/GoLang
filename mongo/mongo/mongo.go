@@ -48,6 +48,7 @@ func Connect(host, port string) error {
 		return err
 	}
 
+	client = conn
 	return nil
 }
 
@@ -79,5 +80,6 @@ func ConnectAuth(host, port, id, pwd string) error {
 		return err
 	}
 
+	client = conn
 	return nil
 }
