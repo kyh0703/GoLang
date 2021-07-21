@@ -94,8 +94,8 @@ github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515/go.mod h1:+0opPa2QZZtGFB
 github.com/kr/pretty v0.1.0/go.mod h1:dAy3ld7l9f0ibDNOQOHHMYYIIbhfbHSm3C4ZsoJORNo=
 github.com/kr/pty v1.1.1/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=
 github.com/kr/text v0.1.0/go.mod h1:4Jbv+DJW3UT/LiOwJeYQe1efqtUx/iVham/4vfdArNI=
-github.com/kyh0703/grpc v0.0.0-20210716014547-aeab52d9d153 h1:d/6bXR++phYI7/PVZtKSKsC9AfnM2icLn5jH4M8qdcY=
-github.com/kyh0703/grpc v0.0.0-20210716014547-aeab52d9d153/go.mod h1:ZYmcngvNGiABuUhxx7r4wqAaI22nKPv+7R0px2vzRj4=
+github.com/kyh0703/grpc v0.0.0-20210721045707-d3e7a4dc45d3 h1:h2Gri/DCS/GFGyqGhJw0SZtW8aBPib7Knwxts1Rm6B4=
+github.com/kyh0703/grpc v0.0.0-20210721045707-d3e7a4dc45d3/go.mod h1:ZYmcngvNGiABuUhxx7r4wqAaI22nKPv+7R0px2vzRj4=
 github.com/markbates/oncer v0.0.0-20181203154359-bf2de49a0be2/go.mod h1:Ld9puTsIW75CHf65OeIOkyKbteujpZVXDpWK6YGZbxE=
 github.com/markbates/safe v1.0.1/go.mod h1:nAqgmRi7cY2nqMc92/bSEeQA+R4OheNU2T1kNSCBdG0=
 github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe/go.mod h1:wL8QJuTMNUDYhXwkmfOly8iTdp5TEcJFWZD2D7SIkUc=
