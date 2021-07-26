@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: http-hello
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: http-hello
+  template:
+    metadata:
+      labels:
+        app: http-hello
+    spec:
+      containers:
+      - name: http-hello
+        image: hello:1
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "50m"
+        ports:
+        - containerPort: 3000
