@@ -30,3 +30,12 @@ func (d Dictionary) Add(word, def string) error {
 	}
 	return nil
 }
+
+func (d Dictionary) Update(word, def string) error {
+	_, err := d.Search(word)
+	switch err {
+	case nil:
+		return err
+	}
+	return nil
+}
