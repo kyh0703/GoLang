@@ -5,8 +5,7 @@ import (
 	"net"
 
 	"github.com/caarlos0/env"
-	"github.com/kyh0703/golang/call-make/mongo"
-	"github.com/kyh0703/golang/call-make/service"
+	"github.com/kyh0703/golang/callservice/service"
 	"google.golang.org/grpc"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
@@ -21,10 +20,6 @@ type Config struct {
 func main() {
 	cfg := Config{}
 	env.Parse(&cfg)
-
-	if err := mongo.Connect(); err != nil {
-		log.Fatalf("init fail mongo conn: %s", err)
-	}
 
 	svc := service.NewCallService()
 	svr := grpc.NewServer(
