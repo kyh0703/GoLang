@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"log"
 
 	callpb "git.bridgetec.com/IPRON/idl.git/gen/go"
 )
@@ -14,6 +15,7 @@ func NewCallService() *CallService {
 }
 
 func (s *CallService) Make(ctx context.Context, req *callpb.MakeRequest) (*callpb.MakeResponse, error) {
+	log.Print(req)
 	return &callpb.MakeResponse{}, nil
 }
 

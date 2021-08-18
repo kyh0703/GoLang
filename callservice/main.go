@@ -8,9 +8,9 @@ import (
 	"github.com/kyh0703/golang/callservice/service"
 	"google.golang.org/grpc"
 
+	callpb "git.bridgetec.com/IPRON/idl.git/gen/go"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
-	callpb "github.com/kyh0703/grpc/gen/call"
 )
 
 type Config struct {
