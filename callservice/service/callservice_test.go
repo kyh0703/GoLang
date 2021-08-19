@@ -27,7 +27,6 @@ func TestMakeBySipTrunk(t *testing.T) {
 	t.Run("Make", func(t *testing.T) {
 		res, err := client.Make(ctx, &pb.MakeRequest{})
 		assert.Nilf(err, "did not connect: %v", err)
-
 		t.Logf("Response: %v", res)
 	})
 }
@@ -46,7 +45,6 @@ func TestMakeBySipLine(t *testing.T) {
 	t.Run("Make", func(t *testing.T) {
 		res, err := client.Make(ctx, &pb.MakeRequest{})
 		assert.Nil(err)
-
 		t.Logf("Response: %v", res)
 	})
 }

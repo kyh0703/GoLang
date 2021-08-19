@@ -14,7 +14,7 @@ import (
 )
 
 type Config struct {
-	Port string `env:"PORT" envDefault:"9000"`
+	Port string `env:"PORT" envDefault:"8000"`
 }
 
 func main() {
@@ -33,6 +33,7 @@ func main() {
 	if err != nil {
 		log.Fatal("listen port fail")
 	}
+	log.Printf("start grpc server: %v", cfg.Port)
 
 	if err := svr.Serve(lis); err != nil {
 		log.Fatal("grpc server fail")
