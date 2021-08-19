@@ -8,7 +8,7 @@ import (
 	"github.com/kyh0703/golang/callservice/service"
 	"google.golang.org/grpc"
 
-	callpb "git.bridgetec.com/IPRON/idl.git/gen/go"
+	pb "git.bridgetec.com/IPRON/idl.git/gen/go"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 )
@@ -27,7 +27,7 @@ func main() {
 			grpc_recovery.UnaryServerInterceptor(),
 		),
 	)
-	callpb.RegisterCallServer(svr, svc)
+	pb.RegisterCallServer(svr, svc)
 
 	lis, err := net.Listen("tcp", ":"+cfg.Port)
 	if err != nil {
