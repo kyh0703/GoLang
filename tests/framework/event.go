@@ -29,3 +29,15 @@ func (e ExpectEvent) Exist(event string) bool {
 	}
 	return false
 }
+
+// type Event interface {
+// 	GetData()
+// 	GetPriority()
+// 	GetCreateTime() time.Time
+// 	SetData()
+// 	SetPriority()
+// 	SetCreateTime()
+// }
+
+// type EventHandler struct {
+// }

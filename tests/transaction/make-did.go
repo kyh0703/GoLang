@@ -10,7 +10,7 @@ type MakeDid struct {
 	framework.Worker
 }
 
-func NewMakeDid() *MakeDid {
+func NewMakeDid() framework.Work {
 	return &MakeDid{
 		Worker: framework.Worker{
 			Id:     "test",
@@ -20,10 +20,6 @@ func NewMakeDid() *MakeDid {
 	}
 }
 
-func (self *MakeDid) Timeout() {
-	log.Println("timeout")
-}
-
 func (self *MakeDid) DoWork() {
-	log.Println("MakeDid")
+	log.Printf("[%v] MakeDid", self.Id)
 }

@@ -1,102 +1,28 @@
 package framework
 
-import "fmt"
+import (
+	"context"
+	"errors"
+	"fmt"
+	"log"
+	"runtime"
+	"sync"
+)
 
-// type TransFn func(job *Job, event Event)
+var (
+	errExist        = errors.New("That worker already exists")
+	errTypeNotFound = errors.New("Invalid worker type")
+)
 
-// type JobType struct {
-// 	fn TransFn
-// }
+func init() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+}
 
-// func NewManager() *Manager {
-// 	w := &Manager{
-// 		transObjs: make(map[string]*JobType),
-// 		transJobs: make(map[string]*Job),
-// 	}
-
-// 	return w
-// }
-
-// func (m *Manager) AddJobType(tName string, fn TransFn) *JobType {
-// 	trans := &JobType{fn: fn}
-// 	m.transObjs[tName] = trans
-// 	return trans
-// }
-
-// /**
-//  * 신규 Job 생성
-//  */
-// func (m *Manager) RunJob(tName string, invokeId string, dur time.Duration, event Event) bool {
-// 	trans, ok := m.transObjs[tName]
-// 	if !ok {
-// 		return false
-// 	}
-// 	_, ok = m.transJobs[invokeId]
-// 	if ok {
-// 		return false
-// 	}
-
-// 	job := &Job{
-// 		eventCh:   make(chan Event, 100),
-// 		keepEvent: make([]Event, 0),
-// 	}
-
-// 	m.transJobs[invokeId] = job
-
-// 	job.ctx = context.Background()
-// 	if dur > 0 {
-// 		job.ctx, job.cancelFn = context.WithTimeout(job.ctx, dur)
-// 	}
-
-// 	m.wg.Add(1)
-
-// 	go func() {
-// 		defer m.wg.Done()
-// 		if job, ok := m.transJobs[invokeId]; ok {
-// 			trans.fn(job, event)
-// 			fmt.Printf("Job Done\n")
-// 		}
-// 	}()
-
-// 	return true
-// }
-
-// /**
-//  * Job에 Event 등록
-//  */
-// func (m *Manager) Emmit(invokeId string, event Event) bool {
-// 	job, ok := m.transJobs[invokeId]
-// 	if !ok {
-// 		return false
-// 	}
-
-// 	job.Emmit(event)
-// 	return true
-// }
-
-// /**
-//  * Job 취소
-//  * @param  {[type]} m *Manager) EndJob(invokeId string [description]
-//  * @return {[type]}   [description]
-//  */
-// func (m *Manager) EndJob(invokeId string) {
-// 	job, ok := m.transJobs[invokeId]
-// 	if !ok {
-// 		return
-// 	}
-
-// 	if job.cancelFn != nil {
-// 		job.cancelFn()
-// 	}
-
-// 	delete(m.transJobs, invokeId)
-// }
-
-////////////////////////////////////////
-type MakeWorker func(WorkerType) *Worker
+type MakeWorker func(WorkerType) (Work, error)
 type Manager struct {
 	MakeWorker
 	Workers
+	sync.WaitGroup
 }
 
 func NewManager(fn MakeWorker) *Manager {
@@ -130,9 +56,90 @@ func (m *Manager) PrintWorker() {
 	}
 }
 
-func (m *Manager) BeginWorker(id string, workerType uint8) error {
+func (m *Manager) BeginWorker(id string, wt WorkerType) error {
+	_, error := m.Workers.search(id)
+	if error == nil {
+		return errExist
+	}
+
+	work, err := m.MakeWorker(wt)
+	if err != nil {
+		return err
+	}
+
+	m.Workers[id] = work
+	work.SetId(id)
+	receive := make(<-chan Event, 10)
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "recv_chan", receive)
+	ctx = context.WithValue(ctx, "test", 1)
+
+	expire := work.GetExpire()
+	if 0 < expire {
+		var cancelFn context.CancelFunc
+		ctx, cancelFn = context.WithTimeout(ctx, expire)
+		work.SetContext(ctx)
+		work.SetCancelFunc(cancelFn)
+	} else {
+		work.SetContext(ctx)
+	}
+
+	fmt.Println(work.GetContext().Value("test"))
+
+	m.WaitGroup.Add(1)
+	go func() {
+		defer m.WaitGroup.Done()
+		work.DoWork()
+	}()
+
 	return nil
 }
 
-func (m *Manager) EndWorker() {
+func (m *Manager) EndWorker(id string) error {
+	worker, err := m.Workers.search(id)
+	if err != nil {
+		return err
+	}
+
+	if worker.GetCancelFunc() != nil {
+		worker.GetCancelFunc()()
+	}
+
+	return m.Workers.delete(id)
 }
+
+func (m *Manager) EndWorkers() {
+	for _, worker := range m.Workers {
+		if worker.GetCancelFunc() != nil {
+			worker.GetCancelFunc()()
+		}
+	}
+
+	m.WaitGroup.Wait()
+	m.Workers.clear()
+}
+
+func (m *Manager) CancelWorker(id string) error {
+	worker, err := m.Workers.search(id)
+	if err != nil {
+		return err
+	}
+
+	cancel := worker.GetCancelFunc()
+	cancel()
+	return nil
+}
+
+func (m *Manager) CancelWorkers() {
+	for _, worker := range m.Workers {
+		log.Println("Cancel")
+		worker.GetContext().Err()
+	}
+}
+
+// func (m *Manager) Emit(id string, event struct{}) error {
+// 	worker, err := m.Workers.search(id)
+// 	if err != nil {
+// 		return err
+// 	}
+// }

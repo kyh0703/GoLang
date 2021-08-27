@@ -3,7 +3,6 @@ package framework
 import (
 	"context"
 	"errors"
-	"fmt"
 	"time"
 )
 
@@ -13,22 +12,23 @@ type Work interface {
 	GetId() string
 	GetType() WorkerType
 	GetExpire() time.Duration
+	GetContext() context.Context
+	GetCancelFunc() context.CancelFunc
 	SetId(id string)
 	SetType(kind WorkerType)
 	SetExpire(expire time.Duration)
+	SetContext(ctx context.Context)
+	SetCancelFunc(cf context.CancelFunc)
 	// below is Virtual Functions
 	DoWork()
-	Timeout()
 }
 
 type Worker struct {
-	Id         string
-	Type       WorkerType
-	Expire     time.Duration
-	Ctx        context.Context
-	CancelFunc context.CancelFunc
-	Events     chan Event
-	keepEvent  []Event
+	Id     string
+	Type   WorkerType
+	Expire time.Duration
+	context.Context
+	context.CancelFunc
 }
 
 func (w *Worker) GetId() string {
@@ -43,6 +43,14 @@ func (w *Worker) GetExpire() time.Duration {
 	return w.Expire
 }
 
+func (w *Worker) GetContext() context.Context {
+	return w.Context
+}
+
+func (w *Worker) GetCancelFunc() context.CancelFunc {
+	return w.CancelFunc
+}
+
 func (w *Worker) SetId(id string) {
 	w.Id = id
 }
@@ -55,47 +63,15 @@ func (w *Worker) SetExpire(expire time.Duration) {
 	w.Expire = expire
 }
 
-func (w *Worker) Emmit(event Event) {
-	w.Events <- event
+func (w *Worker) SetContext(ctx context.Context) {
+	w.Context = ctx
 }
 
-func (w *Worker) reChanKeepEvent() {
-	for _, v := range w.keepEvent {
-		w.Events <- v
-	}
-	w.keepEvent = w.keepEvent[len(w.keepEvent):]
+func (w *Worker) SetCancelFunc(cf context.CancelFunc) {
+	w.CancelFunc = cf
 }
 
-func (w *Worker) WaitEvent(dur time.Duration, expert ExpectEvent) (Event, error) {
-	timeout := time.After(dur)
-
-	for {
-		select {
-		case event := <-w.Events:
-			if !expert.Exist(event.Name) {
-				w.keepEvent = append(w.keepEvent, event)
-				continue
-			}
-			fmt.Printf("evented %d\n", len(w.Events))
-			w.reChanKeepEvent()
-			return event, nil
-		case <-timeout:
-			fmt.Printf("timeout\n")
-			w.reChanKeepEvent()
-			return Event{}, errors.New("timeout")
-		case <-w.Ctx.Done():
-			fmt.Printf("context done\n")
-			w.reChanKeepEvent()
-			return Event{}, w.Ctx.Err()
-		}
-	}
-}
-
-func (w *Worker) Context() context.Context {
-	return w.Ctx
-}
-
-type Workers map[string]*Work
+type Workers map[string]Work
 
 var (
 	errNotFound     = errors.New("Not Found")
@@ -103,7 +79,7 @@ var (
 	errWorkerExists = errors.New("That worker already exists")
 )
 
-func (w Workers) search(id string) (*Work, error) {
+func (w Workers) search(id string) (Work, error) {
 	Work, exist := w[id]
 	if exist {
 		return Work, nil
@@ -111,7 +87,7 @@ func (w Workers) search(id string) (*Work, error) {
 	return nil, errNotFound
 }
 
-func (w Workers) add(id string, worker *Work) error {
+func (w Workers) add(id string, worker Work) error {
 	_, err := w.search(id)
 	switch err {
 	case errNotFound:
@@ -129,4 +105,10 @@ func (w Workers) delete(id string) error {
 	}
 	delete(w, id)
 	return nil
+}
+
+func (w Workers) clear() {
+	for k := range w {
+		delete(w, k)
+	}
 }
