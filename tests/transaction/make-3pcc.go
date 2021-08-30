@@ -14,18 +14,30 @@ type Make3pcc struct {
 func NewMake3pcc() framework.Work {
 	return &Make3pcc{
 		Worker: framework.Worker{
-			Id:     "test",
-			Type:   Make3PCC,
-			Expire: time.Second * 3,
+			Type:   TypeMake3pcc,
+			Expire: time.Second * 30,
 		},
 	}
 }
 
+func Test(e framework.Event) error {
+	return nil
+}
+
 func (tx *Make3pcc) DoWork() {
-	log.Printf("[%v] Make3pcc", tx.Id)
-	select {
-	case <-tx.GetContext().Done():
-		fmt.Printf("context done\n")
+	err := framework.WaitEvent(tx.Context, time.Second*20, func(e framework.Event) error {
+		fmt.Println("WaitEvent", e.Id)
+		return nil
+	}, framework.ExpectEvent{Id: "Leg1", Type: 0})
+	if err != nil {
+		log.Fatal(err)
 		return
 	}
+
+	// work, err := framework.MakeWorker(TypeRouteDevice)
+	// if err != nil {
+	// 	return
+	// }
+	// work.doWork()
+
 }

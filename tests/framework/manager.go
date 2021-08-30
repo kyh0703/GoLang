@@ -32,6 +32,10 @@ func NewManager(fn MakeWorker) *Manager {
 	}
 }
 
+func (m *Manager) initWorker(work *Work) {
+
+}
+
 func (m *Manager) GetWorkerCount() uint16 {
 	var cnt uint16 = 0
 	for id, worker := range m.Workers {
@@ -69,10 +73,7 @@ func (m *Manager) BeginWorker(id string, wt WorkerType) error {
 
 	m.Workers[id] = work
 	work.SetId(id)
-	receive := make(<-chan Event, 10)
-	ctx := context.Background()
-	ctx = context.WithValue(ctx, "recv_chan", receive)
-	ctx = context.WithValue(ctx, "test", 1)
+	ctx := context.WithValue(context.Background(), EVENT_CHAN_KEY, make(chan Event, MAX_EVENTS))
 
 	expire := work.GetExpire()
 	if 0 < expire {
@@ -83,8 +84,6 @@ func (m *Manager) BeginWorker(id string, wt WorkerType) error {
 	} else {
 		work.SetContext(ctx)
 	}
-
-	fmt.Println(work.GetContext().Value("test"))
 
 	m.WaitGroup.Add(1)
 	go func() {
@@ -108,7 +107,7 @@ func (m *Manager) EndWorker(id string) error {
 	return m.Workers.delete(id)
 }
 
-func (m *Manager) EndWorkers() {
+func (m *Manager) EndMapOfWorker() {
 	for _, worker := range m.Workers {
 		if worker.GetCancelFunc() != nil {
 			worker.GetCancelFunc()()
@@ -130,16 +129,28 @@ func (m *Manager) CancelWorker(id string) error {
 	return nil
 }
 
-func (m *Manager) CancelWorkers() {
+func (m *Manager) CancelMapOfWorker() {
 	for _, worker := range m.Workers {
 		log.Println("Cancel")
 		worker.GetContext().Err()
 	}
 }
 
-// func (m *Manager) Emit(id string, event struct{}) error {
-// 	worker, err := m.Workers.search(id)
-// 	if err != nil {
-// 		return err
-// 	}
-// }
+func (m *Manager) Emit(id string, event interface{}) error {
+	worker, err := m.Workers.search(id)
+	if err != nil {
+		return err
+	}
+	v := worker.GetContext().Value(EVENT_CHAN_KEY)
+	if v == nil {
+		return errChanNotFound
+	}
+
+	ch, ok := v.(chan Event)
+	if !ok {
+		return errDiffChanType
+	}
+
+	ch <- Event{Id: "Leg21", Type: 0, Data: event}
+	return nil
+}

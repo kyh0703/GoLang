@@ -13,8 +13,7 @@ type MakeDid struct {
 func NewMakeDid() framework.Work {
 	return &MakeDid{
 		Worker: framework.Worker{
-			Id:     "test",
-			Type:   MakeDID,
+			Type:   TypeMakeDid,
 			Expire: time.Second * 30,
 		},
 	}

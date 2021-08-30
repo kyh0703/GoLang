@@ -8,16 +8,19 @@ import (
 var errTypeNotFound = errors.New("Invalid worker type")
 
 const (
-	Make3PCC = iota
-	MakeDID
+	TypeMake3pcc = iota
+	TypeMakeDid
+	TypeRouteDevice
 )
 
 func MakeTransaction(workerType framework.WorkerType) (framework.Work, error) {
 	switch workerType {
-	case Make3PCC:
+	case TypeMake3pcc:
 		return NewMake3pcc(), nil
-	case MakeDID:
+	case TypeMakeDid:
 		return NewMakeDid(), nil
+	case TypeRouteDevice:
+		return NewRouteDevice(), nil
 	default:
 		return nil, errTypeNotFound
 	}

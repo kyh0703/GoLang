@@ -74,9 +74,8 @@ func (w *Worker) SetCancelFunc(cf context.CancelFunc) {
 type Workers map[string]Work
 
 var (
-	errNotFound     = errors.New("Not Found")
-	errCantUpdate   = errors.New("Cant update non-exiting word")
-	errWorkerExists = errors.New("That worker already exists")
+	errNotFoundWorker = errors.New("Not Found Worker")
+	errWorkerExists   = errors.New("That worker already exists")
 )
 
 func (w Workers) search(id string) (Work, error) {
@@ -84,13 +83,13 @@ func (w Workers) search(id string) (Work, error) {
 	if exist {
 		return Work, nil
 	}
-	return nil, errNotFound
+	return nil, errNotFoundWorker
 }
 
 func (w Workers) add(id string, worker Work) error {
 	_, err := w.search(id)
 	switch err {
-	case errNotFound:
+	case errNotFoundWorker:
 		w[id] = worker
 	case nil:
 		return errWorkerExists
@@ -101,7 +100,7 @@ func (w Workers) add(id string, worker Work) error {
 func (w Workers) delete(id string) error {
 	_, err := w.search(id)
 	if err != nil {
-		return errNotFound
+		return errNotFoundWorker
 	}
 	delete(w, id)
 	return nil
