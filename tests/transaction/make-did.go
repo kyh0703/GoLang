@@ -19,6 +19,6 @@ func NewMakeDid() framework.Work {
 	}
 }
 
-func (self *MakeDid) DoWork() {
+func (self *MakeDid) DoWork() error {
 	log.Printf("[%v] MakeDid", self.Id)
 }

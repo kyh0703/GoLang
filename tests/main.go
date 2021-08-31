@@ -13,8 +13,7 @@ func main() {
 	timer := time.NewTimer(time.Second * 2)
 	go func() {
 		<-timer.C
-		evt := &framework.Event{Id: "Leg1", Type: 0, Data: "123123"}
-		manager.Emit("12341234", evt)
+		manager.Emit("12341234", framework.Event{Id: "Leg1", Type: 0, Data: "123123"})
 	}()
 
 	manager.PrintWorker()

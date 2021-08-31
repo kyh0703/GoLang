@@ -20,7 +20,7 @@ func NewRouteDevice() framework.Work {
 	}
 }
 
-func (tx *RouteDevice) DoWork() {
+func (tx *RouteDevice) DoWork() error {
 	// 1. Find Device
 
 	// 2. Sip Line New Call 요청

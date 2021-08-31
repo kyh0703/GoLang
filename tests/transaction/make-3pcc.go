@@ -3,7 +3,6 @@ package transaction
 import (
 	"fmt"
 	"framework"
-	"log"
 	"time"
 )
 
@@ -24,20 +23,20 @@ func Test(e framework.Event) error {
 	return nil
 }
 
-func (tx *Make3pcc) DoWork() {
+func (tx *Make3pcc) DoWork() error {
 	err := framework.WaitEvent(tx.Context, time.Second*20, func(e framework.Event) error {
-		fmt.Println("WaitEvent", e.Id)
+		fmt.Println("WaitEvent :%v", e)
 		return nil
 	}, framework.ExpectEvent{Id: "Leg1", Type: 0})
 	if err != nil {
-		log.Fatal(err)
-		return
+		return err
 	}
 
-	// work, err := framework.MakeWorker(TypeRouteDevice)
-	// if err != nil {
-	// 	return
-	// }
-	// work.doWork()
+	route, err := MakeTransaction(TypeRouteDevice)
+	if err != nil {
+		return err
+	}
 
+	route.DoWork()
+	return nil
 }

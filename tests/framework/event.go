@@ -3,8 +3,6 @@ package framework
 import (
 	"context"
 	"errors"
-	"fmt"
-	"log"
 	"time"
 )
 
@@ -58,7 +56,8 @@ func reRegisEvent(ch chan Event, events []Event) {
 	}
 }
 
-func WaitEvent(ctx context.Context, timeout time.Duration, listener ListenerFunc, expects ...ExpectEvent) error {
+func WaitEvent(ctx context.Context, timeout time.Duration,
+	listener ListenerFunc, expects ...ExpectEvent) error {
 	if ctx == nil {
 		return errContextNotFound
 	}
@@ -68,15 +67,13 @@ func WaitEvent(ctx context.Context, timeout time.Duration, listener ListenerFunc
 		return err
 	}
 
-	tempSaveEvents := make([]Event, 0, 10)
+	tempSaveEvents := make([]Event, 0, MAX_EVENTS)
 
 	for {
 		select {
 		case event := <-recvChan:
-			log.Printf("[MESSAGE] :%v", event)
 			var isFind bool = false
 			for _, v := range expects {
-				log.Printf("[REQ MESSAGE] :%v", v)
 				if event.Type == v.Type && event.Id == v.Id {
 					isFind = true
 					break
@@ -88,15 +85,12 @@ func WaitEvent(ctx context.Context, timeout time.Duration, listener ListenerFunc
 				continue
 			}
 
-			fmt.Println("Event Proc")
 			reRegisEvent(recvChan, tempSaveEvents)
 			return listener(event)
 		case <-time.After(timeout):
-			fmt.Println("Timeout")
 			reRegisEvent(recvChan, tempSaveEvents)
 			return errTimeout
 		case <-ctx.Done():
-			fmt.Println("Context Cancel")
 			reRegisEvent(recvChan, tempSaveEvents)
 			return ctx.Err()
 		}

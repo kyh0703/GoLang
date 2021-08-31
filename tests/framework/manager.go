@@ -136,11 +136,12 @@ func (m *Manager) CancelMapOfWorker() {
 	}
 }
 
-func (m *Manager) Emit(id string, event interface{}) error {
+func (m *Manager) Emit(id string, event Event) error {
 	worker, err := m.Workers.search(id)
 	if err != nil {
 		return err
 	}
+
 	v := worker.GetContext().Value(EVENT_CHAN_KEY)
 	if v == nil {
 		return errChanNotFound
@@ -151,6 +152,6 @@ func (m *Manager) Emit(id string, event interface{}) error {
 		return errDiffChanType
 	}
 
-	ch <- Event{Id: "Leg21", Type: 0, Data: event}
+	ch <- event
 	return nil
 }

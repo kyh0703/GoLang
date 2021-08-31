@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type WorkerType uint8
+type WorkerType uint16
 
 type Work interface {
 	GetId() string
@@ -20,7 +20,7 @@ type Work interface {
 	SetContext(ctx context.Context)
 	SetCancelFunc(cf context.CancelFunc)
 	// below is Virtual Functions
-	DoWork()
+	DoWork() error
 }
 
 type Worker struct {
