@@ -8,7 +8,7 @@ import "fmt"
 import "time"
 
 func main() {
-
+     // 1. chan chan을 생성 후 고루틴에 전달한다
      requestChan := make(chan chan string)
 
      go goroutineC(requestChan)
@@ -19,7 +19,7 @@ func main() {
 }
 
 func goroutineC(requestChan chan chan string) {
-
+     // 소비자는 받을 채널을 생성후에 생성자에게 채널을 전달한다
      responseChan := make(chan string)
 
      requestChan <- responseChan
@@ -31,7 +31,7 @@ func goroutineC(requestChan chan chan string) {
 }
 
 func goroutineD(requestChan chan chan string) {
-
+     // 생산자는 소비자에게서 전송 받을 채널이 들어오면 메시지를 전달한다.
      responseChan := <-requestChan
 
      responseChan <- "wassup!"
