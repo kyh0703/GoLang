@@ -28,7 +28,6 @@ func create() {
 		{Key: "test2", Value: "3"},
 		{Key: "test3", Value: "4"},
 	})
-
 	if err != nil {
 		log.Fatal(err)
 	}
