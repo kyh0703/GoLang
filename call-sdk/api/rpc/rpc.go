@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"gitlab.com/ipron-cloud/call-sdk/config"
+	"gitlab.com/ipron-cloud/call-app/pkg/config"
 
 	eventpb "gitlab.com/ipron-cloud/grpc-idl/gen/go/event"
 	flowpb "gitlab.com/ipron-cloud/grpc-idl/gen/go/flow"

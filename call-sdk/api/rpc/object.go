@@ -3,7 +3,7 @@ package rpc
 import (
 	"sync"
 
-	"gitlab.com/ipron-cloud/call-sdk/config"
+	"gitlab.com/ipron-cloud/call-app/pkg/config"
 	"google.golang.org/grpc"
 
 	archpb "gitlab.com/ipron-cloud/grpc-idl/gen/go/archdata"
