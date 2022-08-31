@@ -1,0 +1,17 @@
+{
+  "name": "fiber-app",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "css": "gulp"
+  },
+  "dependencies": {
+    "autoprefixer": "^10.4.8",
+    "gulp": "^4.0.2",
+    "gulp-csso": "^4.0.1",
+    "gulp-postcss": "^9.0.1",
+    "gulp-sass": "^5.1.0",
+    "sass": "^1.54.7",
+    "tailwindcss": "^3.1.8"
+  }
+}
