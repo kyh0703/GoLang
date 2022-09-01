@@ -1,8 +1,13 @@
 import gulp from "gulp";
-import del from "del";
-import image from "gulp-image";
 import bro from "gulp-bro";
 import babelify from "babelify";
+import tailwindCSS from "tailwindcss";
+import autoprefixer from "autoprefixer";
+import postCSS from "gulp-postcss";
+import minify from "gulp-csso";
+import del from "del";
+
+const sass = require("gulp-sass")(require("sass"));
 
 const routes = {
   scss: {
@@ -22,24 +27,21 @@ const routes = {
 };
 
 // clean all object
-const clean = () => del(["static/", ".publish"]);
+const clean = () => del(["static/"]);
 
 // build scss
 const scss = () => {
-  const postCSS = require("gulp-postcss");
-  const sass = require("gulp-sass")(require("sass"));
-  const minify = require("gulp-csso");
   return gulp
     .src(routes.scss.src)
     .pipe(sass().on("error", sass.logError))
-    .pipe(postCSS([require("tailwindcss"), require("autoprefixer")]))
+    .pipe(postCSS([tailwindCSS, autoprefixer]))
     .pipe(minify())
     .pipe(gulp.dest(routes.scss.dest));
 };
 
 // zip image
-const img = () =>
-  gulp.src(routes.img.src).pipe(image()).pipe(gulp.dest(routes.img.dest));
+// const img = () =>
+//   gulp.src(routes.img.src).pipe(image()).pipe(gulp.dest(routes.img.dest));
 
 // build JS
 const js = () =>
@@ -53,12 +55,12 @@ const js = () =>
   );
 
 const watch = () => {
-  gulp.watch(routes.img.src, img);
+  // gulp.watch(routes.img.src, img);
   gulp.watch(routes.scss.watch, scss);
   gulp.watch(routes.js.watch, js);
 };
 
-const prepare = gulp.series([clean, img]);
+const prepare = gulp.series([clean]);
 const assets = gulp.series([scss, js]);
 const live = gulp.series([watch]);
 export const build = gulp.series([prepare, assets]);
