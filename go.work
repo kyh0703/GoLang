@@ -1,0 +1,22 @@
+go 1.19
+
+directory (
+    ./call-app
+    ./chan_chan
+    ./concurrency
+    ./context
+    ./ent-graphql
+    ./errgroup
+    ./fiber
+    ./fiber-app
+    ./gin
+    ./grpc
+    ./k8sbuild
+    ./mongo
+    ./muxhttp
+    ./tcp
+    ./test
+    ./test2
+    ./test3
+    ./todolist
+)
